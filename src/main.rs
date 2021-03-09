@@ -25,8 +25,8 @@ fn main() {
 }
 
 struct LissajousCurves {
-    x_mod: f32,
-    y_mod: f32,
+    x_coeff: f32,
+    y_coeff: f32,
     delta: f32,
 }
 
@@ -34,8 +34,8 @@ impl LissajousCurves {
     pub fn new(_ctx: &mut Context) -> LissajousCurves {
         // Load/create resources such as images here.
         LissajousCurves {
-            x_mod: 1.0,
-            y_mod: 1.0,
+            x_coeff: 1.0,
+            y_coeff: 1.0,
             delta: 0.01,
         }
     }
@@ -48,23 +48,25 @@ impl ggez::event::EventHandler for LissajousCurves {
             self.delta = 0.001;
         } else if keyboard::is_mod_active(ctx, event::KeyMods::CTRL) {
             self.delta = 0.1;
+            self.x_coeff = self.x_coeff.round();
+            self.y_coeff = self.y_coeff.round();
         }
 
         if keyboard::is_key_pressed(ctx, event::KeyCode::Up) {
-            self.y_mod += self.delta;
+            self.y_coeff += self.delta;
         }
         if keyboard::is_key_pressed(ctx, event::KeyCode::Down) {
-            self.y_mod -= self.delta;
+            self.y_coeff -= self.delta;
         }
         if keyboard::is_key_pressed(ctx, event::KeyCode::Right) {
-            self.x_mod += self.delta;
+            self.x_coeff += self.delta;
         }
         if keyboard::is_key_pressed(ctx, event::KeyCode::Left) {
-            self.x_mod -= self.delta;
+            self.x_coeff -= self.delta;
         }
         if keyboard::is_key_pressed(ctx, event::KeyCode::Space) {
-            self.x_mod = 1.0;
-            self.y_mod = 1.0;
+            self.x_coeff = 1.0;
+            self.y_coeff = 1.0;
         }
         Ok(())
     }
@@ -76,8 +78,8 @@ impl ggez::event::EventHandler for LissajousCurves {
         let mut n: f32 = 0.0;
         while n <= std::f32::consts::TAU {
             points.push(na::Point2::new(
-                (0.9 * (self.x_mod * n).sin() + 1.0) * WIN_SIZE / 2.0,
-                (0.9 * (self.y_mod * n).cos() + 1.0) * WIN_SIZE / 2.0,
+                (0.9 * (self.x_coeff * n).sin() + 1.0) * WIN_SIZE / 2.0,
+                (0.9 * (self.y_coeff * n).cos() + 1.0) * WIN_SIZE / 2.0,
             ));
             n += std::f32::consts::TAU / 2048.;
         }
